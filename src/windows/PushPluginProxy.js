@@ -1,6 +1,14 @@
 var myApp = {};
 var pushNotifications = Windows.Networking.PushNotifications;
 
+var c = cordova.require('cordova/channel');
+c.createSticky('onActivated');
+c.waitForInitialization('onActivated');
+
+document.addEventListener("activated", function () {
+    c.onActivated.fire();
+});
+
 var createNotificationJSON = function (e) {
     var result = { message: '' };       //Added to identify callback as notification type in the API in case where notification has no message
     var notificationPayload;
@@ -42,7 +50,7 @@ var createNotificationJSON = function (e) {
             break;
     }
 
-    result.additionalData = {};
+    result.additionalData = {coldstart: false};
     result.additionalData.pushNotificationReceivedEventArgs = e;
     return result;
 }
@@ -64,6 +72,17 @@ module.exports = {
                     channel.addEventListener("pushnotificationreceived", onNotificationReceived);
                     myApp.notificationEvent = onNotificationReceived;
                     onSuccess(result, { keepCallback: true });
+
+                    
+
+                  /*  var context = cordova.require('cordova/platform').activationContext;
+                    var launchArgs = context.args;
+                    if (launchArgs) {         //If present, app launched through toast notification
+                        var result = { message: '' };       //Added to identify callback as notification type in the API
+                        result.launchArgs = launchArgs;
+                        result.additionalData = { coldstart: true };
+                        onSuccess(result, { keepCallback: true });
+                    } */
                 }, function (error) {
                     onFail(error);
                 });
@@ -82,5 +101,3 @@ module.exports = {
     }
 };
 require("cordova/exec/proxy").add("PushNotification", module.exports);
-
-
