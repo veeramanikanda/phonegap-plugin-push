@@ -2,6 +2,12 @@ module.exports = {
     init: function(onSuccess, onFail, args) {
         console.log('*** push plugin init');
 
+        // Add manifest.json to main HTML file
+        var linkElement = document.createElement('link');
+        linkElement.rel = 'manifest';
+        linkElement.href = 'manifest.json';
+        document.getElementsByTagName('head')[0].appendChild(linkElement);
+
         if ("serviceWorker" in navigator) {
             console.log("Service Worker is supported");
             // var ServiceWorker = require('phonegap-plugin-push.ServiceWorker');
