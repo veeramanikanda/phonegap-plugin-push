@@ -1,3 +1,5 @@
+/* globals document, navigator */
+
 module.exports = {
     init: function(onSuccess, onFail, args) {
         console.log('*** push plugin init');
@@ -8,15 +10,15 @@ module.exports = {
         linkElement.href = 'manifest.json';
         document.getElementsByTagName('head')[0].appendChild(linkElement);
 
-        if ("serviceWorker" in navigator) {
-            console.log("Service Worker is supported");
+        if ('serviceWorker' in navigator) {
+            console.log('Service Worker is supported');
             // var ServiceWorker = require('phonegap-plugin-push.ServiceWorker');
 
             navigator.serviceWorker.register('ServiceWorker.js').then(function() {
                 return navigator.serviceWorker.ready;
             })
             .then(function(reg) {
-                console.log("Service Worker is ready: ");
+                console.log('Service Worker is ready: ');
                 console.log(reg);
                 reg.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
                     console.log('endpoint: ');
@@ -26,7 +28,7 @@ module.exports = {
                     console.log(error);
                 });
             }).catch(function(error) {
-                console.log("Service Worker error: ");
+                console.log('Service Worker error: ');
                 console.log(error);
             });
         } else {
@@ -38,4 +40,4 @@ module.exports = {
     }
 };
 
-require("cordova/exec/proxy").add("PushNotification", module.exports);
+require('cordova/exec/proxy').add('PushNotification', module.exports);
