@@ -40,9 +40,18 @@ var PushNotification = function(options) {
     linkElement.href = 'manifest.json';
     document.getElementsByTagName('head')[0].appendChild(linkElement);
 
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'MessageChannel' in window) {
         console.log('Service Worker is supported');
-        // var ServiceWorker = require('phonegap-plugin-push.ServiceWorker');
+
+        var result;
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            console.log('*** onmessage: ');
+            console.log(event);
+            console.log(result);
+            that.emit('push', result);
+        };
+
         navigator.serviceWorker.register('ServiceWorker.js').then(function() {
             return navigator.serviceWorker.ready;
         })
@@ -52,8 +61,9 @@ var PushNotification = function(options) {
             reg.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
                 console.log('endpoint: ');
                 console.log(sub.endpoint);
-                var result = { 'registrationId': sub.endpoint.substring(sub.endpoint.lastIndexOf('/') + 1) };
+                result = { 'registrationId': sub.endpoint.substring(sub.endpoint.lastIndexOf('/') + 1) };
                 that.emit('registration', result);
+                navigator.serviceWorker.controller.postMessage(result, [channel.port2]);
             }).catch(function(error) {
                 console.log('*** subscription error');
                 console.log(error);
