@@ -48,8 +48,7 @@ var PushNotification = function(options) {
         channel.port1.onmessage = function(event) {
             console.log('*** onmessage: ');
             console.log(event);
-            console.log(result);
-            that.emit('push', result);
+            that.emit('notification', event.data);
         };
 
         navigator.serviceWorker.register('ServiceWorker.js').then(function() {
@@ -75,39 +74,6 @@ var PushNotification = function(options) {
     } else {
         console.log('Service Worker is not supported');
     }
-
-    /*
-    var success = function(result) {
-        if (result && typeof result.registrationId !== 'undefined') {
-            that.emit('registration', result);
-        } else if (result && result.additionalData && typeof result.additionalData.callback !== 'undefined') {
-            var executeFunctionByName = function(functionName, context) {
-                var args = Array.prototype.slice.call(arguments, 2);
-                var namespaces = functionName.split('.');
-                var func = namespaces.pop();
-                for (var i = 0; i < namespaces.length; i++) {
-                    context = context[namespaces[i]];
-                }
-                return context[func].apply(context, args);
-            };
-
-            executeFunctionByName(result.additionalData.callback, window, result);
-        } else if (result) {
-            that.emit('notification', result);
-        }
-    };
-
-    // triggered on error
-    var fail = function(msg) {
-        var e = (typeof msg === 'string') ? new Error(msg) : msg;
-        that.emit('error', e);
-    };
-
-    // wait at least one process tick to allow event subscriptions
-    setTimeout(function() {
-        exec(success, fail, 'PushNotification', 'init', [options]);
-    }, 10);
-    */
 };
 
 /**

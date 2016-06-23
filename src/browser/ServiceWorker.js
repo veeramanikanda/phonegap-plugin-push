@@ -11,7 +11,30 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('push', function(event) {
     console.log('Push message received', event);
-    messageChannel.ports[0].postMessage(event.data);
+
+    // Need to figure out a way to make these configurable
+    var title = 'Title';
+    var body = 'Message';
+    var icon = 'https://avatars1.githubusercontent.com/u/60365?v=3&s=200';
+    var tag = 'simple-push-demo-notification-tag';
+
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body: body,
+            icon: icon,
+            tag: tag
+        })
+    );
+
+    var pushData = {
+        title: 'Title',
+        message: 'Message',
+        count: 1,
+        sound: 'default',
+        additionalData: {}
+    };
+    messageChannel.ports[0].postMessage(pushData);
+
 });
 
 self.addEventListener('message', function(event) {
